@@ -1,0 +1,44 @@
+{
+  "name": "kelunik/chat-api",
+  "authors": [
+    {
+      "name": "Niklas Keller",
+      "email": "me@kelunik.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "amphp/aerys": "dev-master",
+    "amphp/mysql": "dev-master",
+    "amphp/redis": "dev-master",
+    "kelunik/chat": "dev-master",
+    "rdlowrey/auryn": "^1",
+    "justinrainbow/json-schema": "^1.4@dev"
+  },
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git@github.com:rdlowrey/aerys"
+    },
+    {
+      "type": "git",
+      "url": "git@github.com:bwoebi/aerys-session"
+    },
+    {
+      "type": "git",
+      "url": "git@github.com:kelunik/chat"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^5",
+    "fabpot/php-cs-fixer": "^1.9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kelunik\\ChatApi\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  }
+}
