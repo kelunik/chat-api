@@ -99,13 +99,13 @@ class Dispatcher {
         $count = yield resolve($this->rateLimit->increment("limit:u:{$user->id}"));
         $ttl = yield resolve($this->rateLimit->ttl("limit:u:{$user->id}"));
 
-        $remaining = max(self::RATE_LIMIT - $count + 1, 0);
+        $remaining = self::RATE_LIMIT - $count;
 
         $response->setHeader("x-rate-limit-limit", self::RATE_LIMIT);
-        $response->setHeader("x-rate-limit-remaining", $remaining);
+        $response->setHeader("x-rate-limit-remaining", max(0, $remaining));
         $response->setHeader("x-rate-limit-reset", $ttl);
 
-        if (!$remaining) {
+        if ($remaining < 0) {
             $error = new Error("too_many_requests", "your application exceeded its rate limit", 429);
             $this->writeResponse($request, $response, $error);
         }
