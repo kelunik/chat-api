@@ -7,6 +7,7 @@ use Amp\Redis\Client;
 use Auryn\Injector;
 use Kelunik\Chat\Boundaries\Error;
 use Kelunik\Chat\Boundaries\StandardRequest;
+use Kelunik\ChatApi\AuthenticationException;
 use function Amp\resolve;
 
 $mysqlConfig = sprintf(
@@ -35,6 +36,14 @@ $authentication = $injector->make("Kelunik\\ChatApi\\Authentication");
 
 $apiCallable = function ($endpoint) use ($chat, $authentication) {
     return function (Request $request, Response $response, array $args) use ($endpoint, $chat, $authentication) {
+        if (!$request->getHeader("authorization")) {
+            $response->setStatus(401);
+            $response->setHeader("www-authenticate", "Basic realm=\"use your ID and token\"");
+            $response->send("");
+
+            return;
+        }
+
         $response->setHeader("content-type", "application/json");
         $apiResponse = null;
 
@@ -62,13 +71,27 @@ $apiCallable = function ($endpoint) use ($chat, $authentication) {
                 }
             }
 
-            $auth = $request->getHeader("authentication");
+            $auth = $request->getHeader("authorization");
             $auth = explode(" ", $auth);
 
-            if (count($auth) !== 2 || $auth[0] !== "token") {
-                $apiResponse = new Error("bad_request", "invalid authentication header", 400);
+            if (count($auth) !== 2) {
+                $apiResponse = new Error("bad_request", "invalid authorization header", 400);
 
                 return;
+            }
+
+            switch (strtolower($auth[0])) {
+                case "token":
+                    break;
+
+                case "basic":
+                    $auth[1] = base64_decode($auth[1]);
+                    break;
+
+                default:
+                    $apiResponse = new Error("bad_request", "invalid authorization header", 400);
+
+                    return;
             }
 
             $args = $args ? (object) $args : new stdClass;
@@ -76,7 +99,14 @@ $apiCallable = function ($endpoint) use ($chat, $authentication) {
             $body = yield $request->getBody();
             $payload = $body ? json_decode($body) : null;
 
-            $user = yield resolve($authentication->authenticateWithToken($auth[1]));
+            try {
+                $user = yield resolve($authentication->authenticateWithToken($auth[1]));
+            } catch (AuthenticationException $e) {
+                $apiResponse = new Error("bad_authentication", "invalid token in authorization header", 403);
+
+                return;
+            }
+
             $request = new StandardRequest($endpoint, $args, $payload);
 
             $apiResponse = yield $chat->process($request, $user);

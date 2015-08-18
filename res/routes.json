@@ -5,27 +5,27 @@
     "uri": "/me"
   },
   {
-    "endpoint": "me:rooms",
+    "endpoint": "me/rooms",
     "method": "GET",
     "uri": "/me/rooms"
   },
   {
-    "endpoint": "messages:create",
+    "endpoint": "messages/create",
     "method": "PUT",
     "uri": "/messages"
   },
   {
-    "endpoint": "messages:edit",
+    "endpoint": "messages/edit",
     "method": "PATCH",
     "uri": "/messages/{id:\\d+}"
   },
   {
-    "endpoint": "pings:edit",
+    "endpoint": "pings/edit",
     "method": "PATCH",
     "uri": "/pings/{id:\\d+}"
   },
   {
-    "endpoint": "pings:get",
+    "endpoint": "pings/get",
     "method": "GET",
     "uri": "/pings/{id:\\d+}"
   },
@@ -35,17 +35,17 @@
     "uri": "/rooms"
   },
   {
-    "endpoint": "rooms:get",
+    "endpoint": "rooms/get",
     "method": "GET",
     "uri": "/rooms/{id:\\d+}"
   },
   {
-    "endpoint": "rooms:edit",
+    "endpoint": "rooms/edit",
     "method": "PATCH",
     "uri": "/rooms/{id:\\d+}"
   },
   {
-    "endpoint": "rooms:users:get",
+    "endpoint": "rooms/users/get",
     "method": "GET",
     "uri": "/rooms/{id:\\d+}/users"
   },
@@ -55,7 +55,7 @@
     "uri": "/users"
   },
   {
-    "endpoint": "users:get",
+    "endpoint": "users/get",
     "method": "GET",
     "uri": "/users/{id:\\d+}"
   }
