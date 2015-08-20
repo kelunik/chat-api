@@ -29,7 +29,13 @@ $injector->alias("Kelunik\\Chat\\Storage\\RoomStorage", "Kelunik\\Chat\\Storage\
 $injector->alias("Kelunik\\Chat\\Storage\\UserStorage", "Kelunik\\Chat\\Storage\\MysqlUserStorage");
 $injector->alias("Kelunik\\Chat\\Events\\EventHub", "Kelunik\\Chat\\Events\\NullEventHub");
 $injector->alias("Kelunik\\Chat\\RateLimit\\RateLimit", "Kelunik\\Chat\\RateLimit\\Redis");
+$injector->alias("Kelunik\\Chat\\Search\\Messages\\MessageSearch", "Kelunik\\Chat\\Search\\Messages\\ElasticSearch");
+
 $injector->define("Kelunik\\Chat\\RateLimit\\Redis", [":ttl" => 300]);
+$injector->define("Kelunik\\Chat\\Search\\Messages\\ElasticSearch", [
+    ":host" => config("elastic.host"),
+    ":port" => config("elastic.port"),
+]);
 
 $dispatcher = $injector->make("Kelunik\\ChatApi\\Dispatcher");
 
@@ -42,9 +48,6 @@ foreach ($routes as $route) {
         $request->setLocalVar("chat.api.endpoint", $route->endpoint);
     }, [$dispatcher, "handleApiCall"]);
 }
-
-/** @var Kelunik\Chat\RateLimit\Redis $limit */
-$rateLimit = $injector->make("\\Kelunik\\Chat\\RateLimit\\Redis", [":ttl" => 300]);
 
 $api = (new Aerys\Host)
     ->expose("*", config("app.port"))

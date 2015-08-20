@@ -58,5 +58,10 @@
     "endpoint": "users/get",
     "method": "GET",
     "uri": "/users/{id:\\d+}"
+  },
+  {
+    "endpoint": "rooms/search",
+    "method": "GET",
+    "uri": "/rooms/{room_id:\\d+}/search"
   }
 ]

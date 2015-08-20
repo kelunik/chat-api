@@ -81,6 +81,23 @@
       },
       "additionalProperties": false
     },
+    "elastic": {
+      "id": "elastic",
+      "type": "object",
+      "properties": {
+        "host": {
+          "id": "host",
+          "type": "string"
+        },
+        "port": {
+          "id": "port",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        }
+      },
+      "additionalProperties": false
+    },
     "api": {
       "id": "api",
       "type": "object",
