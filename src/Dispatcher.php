@@ -94,6 +94,8 @@ class Dispatcher {
             // if this happens, something's really wrong, e.g. wrong order of callables
             $response->setStatus(500);
             $response->send("");
+
+            return;
         }
 
         $count = yield resolve($this->rateLimit->increment("limit:u:{$user->id}"));

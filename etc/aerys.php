@@ -30,6 +30,7 @@ $injector->alias("Kelunik\\Chat\\Storage\\UserStorage", "Kelunik\\Chat\\Storage\
 $injector->alias("Kelunik\\Chat\\Events\\EventHub", "Kelunik\\Chat\\Events\\NullEventHub");
 $injector->alias("Kelunik\\Chat\\RateLimit\\RateLimit", "Kelunik\\Chat\\RateLimit\\Redis");
 $injector->alias("Kelunik\\Chat\\Search\\Messages\\MessageSearch", "Kelunik\\Chat\\Search\\Messages\\ElasticSearch");
+$injector->alias("Kelunik\\ChatApi\\TokenRepository", "Kelunik\\ChatApi\\MysqlTokenRepository");
 
 $injector->define("Kelunik\\Chat\\RateLimit\\Redis", [":ttl" => 300]);
 $injector->define("Kelunik\\Chat\\Search\\Messages\\ElasticSearch", [

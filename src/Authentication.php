@@ -2,17 +2,16 @@
 
 namespace Kelunik\ChatApi;
 
-use Amp\Mysql\Pool;
 use Kelunik\Chat\Boundaries\User;
 use Kelunik\Chat\Storage\UserStorage;
 use RuntimeException;
 
 class Authentication {
-    private $mysql;
+    private $tokenRepository;
     private $userStorage;
 
-    public function __construct(Pool $mysql, UserStorage $userStorage) {
-        $this->mysql = $mysql;
+    public function __construct(TokenRepository $tokenRepository, UserStorage $userStorage) {
+        $this->tokenRepository = $tokenRepository;
         $this->userStorage = $userStorage;
     }
 
@@ -28,8 +27,7 @@ class Authentication {
         // use @ so we don't have to check for invalid strings manually
         $hash = (string) @hex2bin($hash);
 
-        $stmt = yield $this->mysql->prepare("SELECT `token` FROM `auth_token` WHERE `user_id` = ?", [$id]);
-        $user = yield $stmt->fetchObject();
+        $user = yield $this->tokenRepository->get($id);
 
         if (!$user || !hash_equals($user->token, $hash)) {
             throw new AuthenticationException("user not found or wrong token");
