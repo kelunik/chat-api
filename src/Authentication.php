@@ -24,26 +24,22 @@ class Authentication {
 
         list($id, $hash) = $auth;
 
-        // use @ so we don't have to check for invalid strings manually
-        $hash = (string) @hex2bin($hash);
+        if (preg_match("~^([0-9a-f]{2})+$~", $hash) !== 1) {
+            throw new AuthenticationException("provided token contained invalid characters");
+        }
 
         $user = yield $this->tokenRepository->get($id);
 
-        if (!$user || !hash_equals($user->token, $hash)) {
+        if (!$user || !hash_equals($user->token, hex2bin($hash))) {
             throw new AuthenticationException("user not found or wrong token");
         }
 
         $userData = yield $this->userStorage->get($id);
 
         if (!$userData) {
-            throw new RuntimeException("user with valid token, but record does not exist");
+            throw new RuntimeException("user with valid token, but user record does not exist");
         }
 
-        $user = new User;
-        $user->id = $userData->id;
-        $user->name = $userData->name;
-        $user->avatar = $userData->avatar;
-
-        return $user;
+        return new User($userData->id, $userData->name, $userData->avatar);
     }
 }
