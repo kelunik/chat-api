@@ -108,6 +108,8 @@ class Dispatcher {
         $response->setHeader("x-rate-limit-reset", $ttl);
 
         if ($remaining < 0) {
+            $response->setHeader("retry-after", $ttl);
+
             $error = new Error("too_many_requests", "your application exceeded its rate limit", 429);
             $this->writeResponse($request, $response, $error);
         }
