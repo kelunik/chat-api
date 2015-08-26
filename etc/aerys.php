@@ -47,12 +47,13 @@ $routes = json_decode(file_get_contents(__DIR__ . "/../res/routes.json"));
 foreach ($routes as $route) {
     $router->route($route->method, $route->uri, function (Request $request) use ($route) {
         $request->setLocalVar("chat.api.endpoint", $route->endpoint);
-    }, [$dispatcher, "handleApiCall"]);
+    }, [$dispatcher, "handle"]);
 }
 
 $api = (new Aerys\Host)
     ->expose("*", config("app.port"))
     ->name(config("app.host"))
-    ->use([$dispatcher, "handleAuthorization"])
-    ->use([$dispatcher, "handleRateLimit"])
-    ->use($router);
+    ->use([$dispatcher, "authorize"])
+    ->use([$dispatcher, "rateLimit"])
+    ->use($router)
+    ->use([$dispatcher, "fallback"]);

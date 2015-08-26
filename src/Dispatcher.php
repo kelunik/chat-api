@@ -42,7 +42,7 @@ class Dispatcher {
         $response->send(json_encode($result->getData(), JSON_PRETTY_PRINT));
     }
 
-    public function handleAuthorization(Request $request, Response $response) {
+    public function authorize(Request $request, Response $response) {
         if (!$request->getHeader("authorization")) {
             $response->setStatus(401);
             $response->setHeader("www-authenticate", "Basic realm=\"Use your ID as username and token as password!\"");
@@ -87,7 +87,7 @@ class Dispatcher {
         // a callable further down the chain will send the body
     }
 
-    public function handleRateLimit(Request $request, Response $response) {
+    public function rateLimit(Request $request, Response $response) {
         $user = $request->getLocalVar("chat.api.user");
 
         if (!$user) {
@@ -117,7 +117,7 @@ class Dispatcher {
         // a callable further down the chain will send the body
     }
 
-    public function handleApiCall(Request $request, Response $response, array $args) {
+    public function handle(Request $request, Response $response, array $args) {
         $endpoint = $request->getLocalVar("chat.api.endpoint");
         $user = $request->getLocalVar("chat.api.user");
 
@@ -158,5 +158,9 @@ class Dispatcher {
 
         $result = yield $this->chat->process(new StandardRequest($endpoint, $args, $payload), $user);
         $this->writeResponse($request, $response, $result);
+    }
+
+    public function fallback(Request $request, Response $response) {
+        $this->writeResponse($request, $response, Error::make("not_found"));
     }
 }
